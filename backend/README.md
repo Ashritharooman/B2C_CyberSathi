@@ -82,6 +82,29 @@ afterwards, regardless of `DATABASE_URL`.
 pytest tests/ -v
 ```
 
+## Continuous deployment (image publishing)
+
+`.github/workflows/backend-cd.yml` runs on every push to `main` (i.e. after a
+PR is merged). It builds the image from `backend/Dockerfile` and pushes it to
+GitHub Container Registry (ghcr.io) under this repo's namespace, tagged with
+both `latest` and the short commit SHA — no extra secrets required, it
+authenticates with the built-in `GITHUB_TOKEN`.
+
+This stops at "image is published." There is no deploy-to-a-live-server step
+yet — no hosting provider has been chosen, so that's a separate, future
+decision.
+
+To manually pull and run the latest published image:
+
+```bash
+docker pull ghcr.io/ashritharooman/b2c_cybersathi-backend:latest
+docker run --env-file .env -p 8000:8000 ghcr.io/ashritharooman/b2c_cybersathi-backend:latest
+```
+
+(`.env` here needs the same `DATABASE_URL` and `JWT_SECRET` as any other run
+of the backend — see the environment variables table above. The image runs
+`alembic upgrade head` automatically on startup, same as in `docker-compose.yml`.)
+
 ## Project layout
 
 ```

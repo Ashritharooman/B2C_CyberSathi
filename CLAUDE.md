@@ -21,9 +21,13 @@ CyberSaathi B2C — an AI-driven fraud recovery app. Stack: Flutter (frontend, n
 **Done:**
 - Milestones 1–2: backend auth (`/signup`, `/login`, `/me`) and pytest suite, verified against a real Postgres instance.
 - Milestones 3–4: backend Dockerized (`backend/Dockerfile`, `backend/docker-entrypoint.sh`, `backend/.dockerignore`), `docker-compose.yml` at the repo root (Postgres + backend, healthchecked, named volume, migrations run automatically on container start), and GitHub Actions CI (`.github/workflows/backend-ci.yml`, job `backend-tests`, runs against a real Postgres service container on every PR to `main`).
+- Milestone 7: CD to the image registry. `.github/workflows/backend-cd.yml` runs on every push to `main`, builds `backend/Dockerfile`, and publishes it to `ghcr.io` under this repo's namespace tagged `latest` + short commit SHA, authenticating with the built-in `GITHUB_TOKEN` (no extra secrets). This stops at "image published" — see `backend/README.md`'s "Continuous deployment" section for the manual pull/run commands.
 
-**Not yet done:**
-- Flutter frontend (`frontend/` is still a placeholder).
+**In progress:**
+- Milestone 6: Flutter frontend (`frontend/`) — signup, login, and protected home screens, a centralized `ApiClient`, and `flutter_secure_storage`-backed token storage are written and pass `flutter analyze`, but are **not yet verified end-to-end**. Blocked locally by a Flutter SDK path issue (the SDK is installed under a path containing a space, which breaks Dart's native-assets hook runner for a transitive dependency of `flutter_secure_storage`) — affects `flutter run`, `flutter test`, and plain `dart run` alike. This is an environment/toolchain issue, not an app code issue.
+
+**Not yet done / intentionally deferred:**
+- Live deployment to a hosting provider. No provider has been chosen yet — `backend-cd.yml` publishes the image to ghcr.io only; an actual deploy-to-a-live-server step is a separate, future decision.
 - Branch protection on `main` requiring the `backend-tests` check — the user is setting this up manually.
 
 ## Commands
